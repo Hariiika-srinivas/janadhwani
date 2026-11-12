@@ -1,0 +1,52 @@
+{
+  "name": "JanaDhwani - Automated Reminders & Escalation Cycle",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/demo/run-cycle",
+        "method": "POST",
+        "options": {}
+      },
+      "id": "http-run-cycle",
+      "name": "Execute Backend Escalation Cycle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const summary = $json.summary || {};\nreturn [{\n  json: {\n    cycle_executed_at: new Date().toISOString(),\n    reminders_50_sent: summary.reminders_50 || 0,\n    reminders_90_sent: summary.reminders_90 || 0,\n    overdue_complaints: summary.overdue_count || 0,\n    escalated_to_l2: summary.escalated_l2 || 0,\n    escalated_to_l3: summary.escalated_l3 || 0,\n    escalated_to_l4: summary.escalated_l4 || 0,\n    reassigned_on_leave: summary.reassigned_on_leave || 0\n  }\n}];"
+      },
+      "id": "log-metrics",
+      "name": "Log Escalation Metrics",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [[{ "node": "Execute Backend Escalation Cycle", "type": "main", "index": 0 }]]
+    },
+    "Execute Backend Escalation Cycle": {
+      "main": [[{ "node": "Log Escalation Metrics", "type": "main", "index": 0 }]]
+    }
+  }
+}

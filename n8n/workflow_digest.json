@@ -1,0 +1,67 @@
+{
+  "name": "JanaDhwani - Daily Executive Digest & Early Warnings",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron-daily-8am",
+      "name": "Daily at 8:00 AM",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/dashboard/early-warnings",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "fetch-warnings",
+      "name": "Fetch 3x Early Warning Surges",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 240]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/dashboard/summary",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "fetch-kpi",
+      "name": "Fetch KPI Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "const warnings = items[0].json || [];\nlet text = '🚨 *JanaDhwani Daily Executive Briefing*\\n';\ntext += '━━━━━━━━━━━━━━━━━━━━━━━━━━\\n';\ntext += `⚠️ Active Early Warning Alerts: ${warnings.length}\\n\\n`;\n\nwarnings.forEach((w, i) => {\n  text += `${i+1}. *${w.organization_name}* - ${w.category_name}\\n`;\n  text += `   Surge: ${w.surge_multiplier} (${w.current_weekly_volume} complaints)\\n`;\n  text += `   Action: ${w.recommendation_en}\\n\\n`;\n});\n\nreturn [{\n  json: {\n    telegram_message: text,\n    alert_count: warnings.length,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "format-briefing",
+      "name": "Format Telegram & SMS Digest",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [760, 300]
+    }
+  ],
+  "connections": {
+    "Daily at 8:00 AM": {
+      "main": [
+        [{ "node": "Fetch 3x Early Warning Surges", "type": "main", "index": 0 }],
+        [{ "node": "Fetch KPI Summary", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fetch 3x Early Warning Surges": {
+      "main": [[{ "node": "Format Telegram & SMS Digest", "type": "main", "index": 0 }]]
+    }
+  }
+}

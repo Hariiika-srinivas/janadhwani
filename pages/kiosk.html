@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ಕಿಯೋಸ್ಕ್ ಮೋಡ್ - ಜನಧ್ವನಿ (JanaDhwani Kiosk)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; }
+    .kiosk-card:active { transform: scale(0.96); }
+  </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between">
+  <!-- Top Bar -->
+  <header class="bg-slate-950 border-b border-slate-800 p-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-teal-500 text-slate-950 flex items-center justify-center font-black text-xl">ಜ</span>
+        <div>
+          <h1 class="text-xl font-black tracking-wide">ಜನಧ್ವನಿ ಕಿಯೋಸ್ಕ್ (JanaDhwani Kiosk)</h1>
+          <p class="text-xs text-teal-400">ಸರ್ಕಾರಿ ಆಸ್ಪತ್ರೆ ಗ್ರಾಮೀಣ & ಹಿರಿಯ ನಾಗರಿಕರ ಸಹಾಯವಾಣಿ</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 bg-teal-900/60 border border-teal-500/30 text-teal-300 rounded-lg text-xs font-semibold">🔊 ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ ಸಕ್ರಿಯವಾಗಿದೆ</span>
+        <a href="/" class="text-xs text-slate-400 hover:text-white underline">ಮುಖ್ಯ ಪುಟ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid of Large Icons -->
+  <main class="max-w-5xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-white">ನಿಮ್ಮ ಸಮಸ್ಯೆಯ ಚಿತ್ರವನ್ನು ಮುಟ್ಟಿ (Touch Problem Icon)</h2>
+      <p class="text-slate-400 text-base mt-2">ಸ್ಪರ್ಶಿಸಿದ ತಕ್ಷಣ ಧ್ವನಿಯ ಮೂಲಕ ಸಹಾಯ ಸಿಗುತ್ತದೆ</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <!-- Water Icon -->
+      <button onclick="handleKioskCategory('Drinking Water/Sanitation', 'ಕುಡಿಯುವ ನೀರು ಮತ್ತು ಶೌಚಾಲಯ ಸಮಸ್ಯೆ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">🚰</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ಕುಡಿಯುವ ನೀರು / ಶೌಚಾಲಯ</span>
+        <span class="text-xs text-slate-400 mt-1">Water & Sanitation</span>
+      </button>
+
+      <!-- Medicine Icon -->
+      <button onclick="handleKioskCategory('Medicine Shortage', 'ಔಷಧಿ ಕೊರತೆ ಅಥವಾ ಮೆಡಿಕಲ್ ಶಾಪ್ ಸಮಸ್ಯೆ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">💊</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ಔಷಧಿ ಸಿಗುತ್ತಿಲ್ಲ</span>
+        <span class="text-xs text-slate-400 mt-1">Medicine Shortage</span>
+      </button>
+
+      <!-- Cleanliness Icon -->
+      <button onclick="handleKioskCategory('Hygiene/Cleanliness', 'ಸ್ವಚ್ಛತೆ ಮತ್ತು ಕಸದ ಸಮಸ್ಯೆ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">🧹</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ಸ್ವಚ್ಛತೆ & ನೈರ್ಮಲ್ಯ</span>
+        <span class="text-xs text-slate-400 mt-1">Cleanliness & Waste</span>
+      </button>
+
+      <!-- Doctor Icon -->
+      <button onclick="handleKioskCategory('Doctor/Staff Absent', 'ವೈದ್ಯರು ಅಥವಾ ನರ್ಸ್ ಗೈರುಹಾಜರಿ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">👨‍⚕️</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ವೈದ್ಯರು ಬಂದಿಲ್ಲ</span>
+        <span class="text-xs text-slate-400 mt-1">Doctor Absent</span>
+      </button>
+
+      <!-- Bed Icon -->
+      <button onclick="handleKioskCategory('Beds/Facilities', 'ಹಾಸಿಗೆ ಅಥವಾ ವೀಲ್‌ಚೇರ್ ಕೊರತೆ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">🛏️</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ಹಾಸಿಗೆ ಇಲ್ಲ / ವೀಲ್‌ಚೇರ್</span>
+        <span class="text-xs text-slate-400 mt-1">Beds & Facilities</span>
+      </button>
+
+      <!-- Electricity / Maintenance -->
+      <button onclick="handleKioskCategory('Infrastructure Maintenance', 'ಕಟ್ಟಡ ಅಥವಾ ಕರೆಂಟ್ ತೊಂದರೆ')" class="kiosk-card p-6 md:p-8 bg-slate-800 hover:bg-slate-700/80 border-2 border-slate-700 hover:border-teal-400 rounded-3xl flex flex-col items-center justify-center text-center transition shadow-xl cursor-pointer">
+        <span class="text-5xl md:text-6xl mb-3">💡</span>
+        <span class="text-lg md:text-xl font-bold text-teal-300">ಕರೆಂಟ್ / ಲಿಫ್ಟ್ ಸಮಸ್ಯೆ</span>
+        <span class="text-xs text-slate-400 mt-1">Electricity & Repairs</span>
+      </button>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="kiosk-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+      <div class="bg-slate-800 border-2 border-teal-500 rounded-3xl p-8 max-w-md w-full text-center">
+        <div class="text-5xl mb-4" id="modal-icon">🚰</div>
+        <h3 class="text-2xl font-bold text-white mb-2" id="modal-title">ಕುಡಿಯುವ ನೀರಿನ ಸಮಸ್ಯೆ</h3>
+        <p class="text-slate-300 text-sm mb-6" id="modal-desc">ಈ ದೂರನ್ನು ದಾಖಲಿಸುವುದೇ?</p>
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="submitKioskGrievance()" class="py-4 bg-teal-600 hover:bg-teal-500 text-white font-black text-lg rounded-2xl shadow-lg">✓ ಹೌದು (Yes)</button>
+          <button onclick="closeKioskModal()" class="py-4 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-lg rounded-2xl">✗ ಬೇಡ (Cancel)</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-slate-950 border-t border-slate-800 p-4 text-center text-xs text-slate-500">
+    ಕಲ್ಯಾಣ ಕರ್ನಾಟಕ ಸಾಲ್ವಥಾನ್ 2026 — ಜನಧ್ವನಿ ಸ್ಪರ್ಶ ಕಿಯೋಸ್ಕ್ ವ್ಯವಸ್ಥೆ
+  </footer>
+
+  <script>
+    let selectedCat = null;
+    let selectedKn = null;
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'kn-IN';
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    function handleKioskCategory(category, kannadaDesc) {
+      selectedCat = category;
+      selectedKn = kannadaDesc;
+      document.getElementById('modal-title').innerText = kannadaDesc;
+      document.getElementById('modal-desc').innerText = `ನೀವು ${kannadaDesc} ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಿ. ದೂರನ್ನು ದಾಖಲಿಸುವುದೇ?`;
+      document.getElementById('kiosk-modal').classList.remove('hidden');
+      speakText(`${kannadaDesc}. ದೂರನ್ನು ದಾಖಲಿಸುವುದೇ?`);
+    }
+
+    function closeKioskModal() {
+      document.getElementById('kiosk-modal').classList.add('hidden');
+    }
+
+    async function submitKioskGrievance() {
+      const payload = {
+        text: `ಕಿಯೋಸ್ಕ್ ಮೂಲಕ ದೂರು: ${selectedKn}`,
+        organization_id: 1, // Kalaburagi District Hospital
+        ward_id: 1, // Maternity
+        department_code: 'HEALTH',
+        language: 'kn',
+        channel: 'KIOSK',
+        phone: '9845000000',
+        citizen_name: 'Kiosk Citizen',
+        is_anonymous: true
+      };
+
+      try {
+        const res = await fetch('/api/complaints', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        document.getElementById('modal-title').innerText = "ದೂರು ದಾಖಲಾಗಿದೆ!";
+        document.getElementById('modal-desc').innerText = `ದೂರು ಸಂಖ್ಯೆ: ${data.public_id}. ಅಧಿಕಾರಿಗಳಿಗೆ ಸಂದೇಶ ಕಳುಹಿಸಲಾಗಿದೆ.`;
+        speakText(`ನಿಮ್ಮ ದೂರು ದಾಖಲಾಗಿದೆ. ದೂರು ಸಂಖ್ಯೆ ${data.public_id}. ಧನ್ಯವಾದಗಳು.`);
+        setTimeout(() => {
+          closeKioskModal();
+        }, 4000);
+      } catch (e) {
+        alert("Error: " + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

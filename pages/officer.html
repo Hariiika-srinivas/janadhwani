@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ಅಧಿಕಾರಿ ಪೋರ್ಟಲ್ - ಜನಧ್ವನಿ (Officer Portal)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="bg-slate-900 text-white border-b border-slate-800 p-4 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center font-bold">ಜ</span>
+        <h1 class="text-lg font-bold">ಅಧಿಕಾರಿ ಪೋರ್ಟಲ್ (Officer Action Portal)</h1>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <span class="text-slate-400">Dr. Sneha Kulkarni (L1 Medical Officer)</span>
+        <a href="/" class="px-3 py-1 bg-slate-800 rounded hover:bg-slate-700">ಮುಖ್ಯ ಪುಟ</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">ಆದ್ಯತಾ ದೂರುಗಳ ಸರತಿ (Priority Grievance Queue)</h2>
+          <p class="text-xs text-slate-500">ಆದ್ಯತೆ ಅಂಕ ಮತ್ತು ಗಡುವು ಆಧಾರಿತ ಸರತಿ ಪಟ್ಟಿ</p>
+        </div>
+        <button onclick="loadQueue()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">🔄 ನವೀಕರಿಸಿ (Refresh)</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase">
+            <tr>
+              <th class="p-3">ದೂರು ಸಂಖ್ಯೆ</th>
+              <th class="p-3">ಆಸ್ಪತ್ರೆ / ವಿಭಾಗ</th>
+              <th class="p-3">ದೂರಿನ ವಿವರ</th>
+              <th class="p-3">ಆದ್ಯತೆ</th>
+              <th class="p-3">ವರದಿಗಳು</th>
+              <th class="p-3">ಸ್ಥಿತಿ</th>
+              <th class="p-3">ಕ್ರಮ</th>
+            </tr>
+          </thead>
+          <tbody id="queue-tbody" class="divide-y divide-slate-200">
+            <tr><td colspan="7" class="p-4 text-center text-slate-400">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function loadQueue() {
+      try {
+        const res = await fetch('/api/officer/complaints?department=HEALTH');
+        const data = await res.json();
+        const tbody = document.getElementById('queue-tbody');
+        tbody.innerHTML = '';
+        data.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50';
+          tr.innerHTML = `
+            <td class="p-3 font-mono font-bold text-slate-900">${c.public_id}</td>
+            <td class="p-3"><span class="font-bold text-slate-800 block">${c.cat_name}</span><span class="text-slate-500">${c.org_name}</span></td>
+            <td class="p-3 max-w-xs truncate text-slate-600">${c.original_text}</td>
+            <td class="p-3 font-mono font-bold ${c.priority_score >= 80 ? 'text-red-700' : 'text-slate-800'}">${c.priority_score}</td>
+            <td class="p-3 font-mono">${c.duplicate_count > 1 ? `<span class="text-purple-700 font-bold">🔥 ${c.duplicate_count}</span>` : '1'}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${c.is_overdue ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${c.status}</span></td>
+            <td class="p-3"><button onclick="resolveComplaint(${c.id}, '${c.public_id}')" class="px-2.5 py-1 bg-teal-700 text-white rounded font-bold hover:bg-teal-800">ಪರಿಹರಿಸಿ</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function resolveComplaint(id, pubId) {
+      const note = prompt(`ದೂರು #${pubId} ಪರಿಹಾರದ ವಿವರಗಳನ್ನು ದಾಖಲಿಸಿ:`, 'ಕ್ಷೇತ್ರ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ ಮತ್ತು ದುರಸ್ತಿ ಮಾಡಲಾಗಿದೆ.');
+      if (!note) return;
+      await fetch(`/api/complaints/${id}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action_type: 'RESOLVED',
+          notes: note,
+          officer_id: 1,
+          photo_url: '/static/uploads/water_filter_fixed.jpg',
+          location_gps: '16.2076, 77.3463'
+        })
+      });
+      alert(`ದೂರು #${pubId} ಪರಿಹರಿಸಲಾಗಿದೆ ಎಂದು ದಾಖಲಿಸಲಾಗಿದೆ. ನಾಗರಿಕರಿಗೆ ಪರಿಶೀಲನಾ ಸಂದೇಶ ಕಳುಹಿಸಲಾಗಿದೆ.`);
+      loadQueue();
+    }
+
+    loadQueue();
+  </script>
+</body>
+</html>

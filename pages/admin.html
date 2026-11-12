@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ವ್ಯವಸ್ಥಾಪನೆ & ಕ್ಯೂಆರ್ ಕೋಡ್ - ಜನಧ್ವನಿ (Admin & QR)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="bg-slate-900 text-white border-b border-slate-800 p-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="/" class="text-lg font-bold flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center font-bold">ಜ</span>
+        ಜನಧ್ವನಿ ಅಡ್ಮಿನ್ & ಕ್ಯೂಆರ್ ಸ್ಟುಡಿಯೋ
+      </a>
+      <a href="/" class="text-xs text-slate-400 hover:text-white">ಮುಖ್ಯ ಪುಟ</a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <h2 class="text-xl font-bold text-slate-900 mb-2">ಆಸ್ಪತ್ರೆ ಮತ್ತು ವಾರ್ಡ್ ಕ್ಯೂಆರ್ ಪೋಸ್ಟರ್ ಸೃಷ್ಟಿ (QR Poster Generator)</h2>
+      <p class="text-xs text-slate-500 mb-6">ಆಸ್ಪತ್ರೆಯ ಪ್ರವೇಶ ದ್ವಾರ ಅಥವಾ ವಾರ್ಡ್ ಗೋಡೆಯ ಮೇಲೆ ಅಂಟಿಸಲು ಕ್ಯೂಆರ್ ಕೋಡ್ ಪೋಸ್ಟರ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ಆಸ್ಪತ್ರೆ ಆಯ್ಕೆಮಾಡಿ:</label>
+          <select id="qr-org-select" class="w-full px-3 py-2 bg-slate-50 border rounded-lg text-sm">
+            <option value="1">ಜಿಲ್ಲಾ ಆಸ್ಪತ್ರೆ ಕಲಬುರಗಿ (Kalaburagi)</option>
+            <option value="2">ಜಿಲ್ಲಾ ಆಸ್ಪತ್ರೆ ಬೀದರ್ (Bidar)</option>
+            <option value="3">ಜಿಲ್ಲಾ ಆಸ್ಪತ್ರೆ ರಾಯಚೂರು (Raichur)</option>
+            <option value="4">ಜಿಲ್ಲಾ ಆಸ್ಪತ್ರೆ ಕೊಪ್ಪಳ (Koppal)</option>
+            <option value="5">ಜಿಲ್ಲಾ ಆಸ್ಪತ್ರೆ ಯಾದಗಿರಿ (Yadgir)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">ವಾರ್ಡ್ ಆಯ್ಕೆಮಾಡಿ (ಐಚ್ಛಿಕ):</label>
+          <select id="qr-ward-select" class="w-full px-3 py-2 bg-slate-50 border rounded-lg text-sm">
+            <option value="">ಸಂಪೂರ್ಣ ಆಸ್ಪತ್ರೆ (General)</option>
+            <option value="1">ಹೆರಿಗೆ ವಾರ್ಡ್ (Maternity Ward)</option>
+            <option value="2">ಮಕ್ಕಳ ವಾರ್ಡ್ (Pediatric Ward)</option>
+            <option value="3">ಸಾಮಾನ್ಯ ವಾರ್ಡ್ (General Ward)</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="generatePoster()" class="px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl text-sm transition">
+        ಕ್ಯೂಆರ್ ಪೋಸ್ಟರ್ ರಚಿಸಿ (Generate QR Poster)
+      </button>
+
+      <div id="qr-output" class="hidden mt-6 p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center">
+        <h3 class="text-lg font-bold text-slate-900" id="poster-title">District Hospital Raichur</h3>
+        <p class="text-xs text-slate-500 mb-4" id="poster-sub">ಸ್ಮಾರ್ಟ್‌ಫೋನ್ ಅಥವಾ ಧ್ವನಿ ಮೂಲಕ ದೂರು ನೀಡಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</p>
+        <img id="poster-img" src="" alt="QR Code" class="w-48 h-48 border border-slate-300 rounded-xl p-2 bg-white shadow-sm mb-4">
+        <a id="download-btn" href="" download="janadhwani_poster.png" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg shadow">ಪೋಸ್ಟರ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ (PNG)</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function generatePoster() {
+      const orgId = document.getElementById('qr-org-select').value;
+      const wardId = document.getElementById('qr-ward-select').value;
+      let url = `/api/admin/qr-poster?organization_id=${orgId}&format=json`;
+      if (wardId) url += `&ward_id=${wardId}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      document.getElementById('qr-output').classList.remove('hidden');
+      document.getElementById('poster-title').innerText = `${data.organization_name} ${data.ward_name}`;
+      document.getElementById('poster-img').src = data.qr_base64;
+      document.getElementById('download-btn').href = data.qr_base64;
+    }
+  </script>
+</body>
+</html>

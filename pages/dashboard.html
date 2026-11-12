@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ಕಾರ್ಯಾಚರಣೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ - ಜನಧ್ವನಿ (Operations Dashboard)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="bg-slate-900 text-white border-b border-slate-800 p-4 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="/" class="text-lg font-bold flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center font-bold">ಜ</span>
+        ಜನಧ್ವನಿ ಕಾರ್ಯಾಚರಣೆ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್
+      </a>
+      <div class="flex items-center gap-3 text-xs">
+        <a href="/" class="text-teal-400">ಮುಖ್ಯ ಅಪ್ಲಿಕೇಶನ್</a>
+        <a href="/api/dashboard/export-csv" class="px-3 py-1 bg-slate-800 rounded hover:bg-slate-700">CSV ರಫ್ತು</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-6">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="kpi-container">
+      <div class="bg-white p-5 rounded-2xl border border-slate-200">
+        <span class="text-xs text-slate-500 font-medium block">ಒಟ್ಟು ದೂರುಗಳು (Total)</span>
+        <span class="text-3xl font-black text-slate-900 font-mono" id="kpi-total">--</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200">
+        <span class="text-xs text-slate-500 font-medium block">ಬಾಕಿ ದೂರುಗಳು (Pending)</span>
+        <span class="text-3xl font-black text-amber-600 font-mono" id="kpi-pending">--</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200">
+        <span class="text-xs text-slate-500 font-medium block">ಪರಿಹಾರ ದರ (Resolution Rate)</span>
+        <span class="text-3xl font-black text-emerald-600 font-mono" id="kpi-rate">--%</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-200">
+        <span class="text-xs text-slate-500 font-medium block">ಗಡುವು ಮೀರಿದವು (Overdue)</span>
+        <span class="text-3xl font-black text-rose-600 font-mono" id="kpi-overdue">--</span>
+      </div>
+    </div>
+
+    <!-- Early Warnings -->
+    <div id="early-warnings-box" class="bg-amber-50 border border-amber-300 rounded-2xl p-5">
+      <h3 class="font-black text-sm text-amber-900 mb-2">⚠️ ಆರಂಭಿಕ ಎಚ್ಚರಿಕೆಗಳು (Early Warnings - 3x Weekly Surge)</h3>
+      <div id="warnings-list" class="space-y-2 text-xs text-amber-950">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</div>
+    </div>
+
+    <!-- Hospital Scores -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6">
+      <h3 class="font-bold text-base text-slate-900 mb-4">ಆಸ್ಪತ್ರೆ ಆರೋಗ್ಯ ಸೂಚ್ಯಂಕ (Hospital Health Composite Scores)</h3>
+      <div id="hospital-scores-grid" class="grid grid-cols-1 sm:grid-cols-5 gap-3"></div>
+    </div>
+  </main>
+
+  <script>
+    async function initDashboard() {
+      const [sum, warn, scores] = await Promise.all([
+        fetch('/api/dashboard/summary').then(r => r.json()),
+        fetch('/api/dashboard/early-warnings').then(r => r.json()),
+        fetch('/api/dashboard/hospital-scores').then(r => r.json())
+      ]);
+
+      document.getElementById('kpi-total').innerText = sum.total_complaints;
+      document.getElementById('kpi-pending').innerText = sum.pending_complaints;
+      document.getElementById('kpi-rate').innerText = sum.resolution_rate_pct + '%';
+      document.getElementById('kpi-overdue').innerText = sum.overdue_complaints;
+
+      const wList = document.getElementById('warnings-list');
+      if (warn.length === 0) {
+        wList.innerHTML = '<span class="text-emerald-700">ಯಾವುದೇ ಅಸಹಜ ಹೆಚ್ಚಳ ಕಂಡುಬಂದಿಲ್ಲ. ಎಲ್ಲಾ ವಿಭಾಗಗಳು ಸಾಮಾನ್ಯ ಮಟ್ಟದಲ್ಲಿವೆ.</span>';
+      } else {
+        wList.innerHTML = warn.map(w => `
+          <div class="p-2 bg-white rounded border border-amber-200">
+            <strong>${w.organization_name}</strong> — ${w.category_name} (${w.surge_multiplier} surge)
+            <div class="text-slate-500">${w.recommendation_kn || w.recommendation_en}</div>
+          </div>
+        `).join('');
+      }
+
+      const scoresGrid = document.getElementById('hospital-scores-grid');
+      scoresGrid.innerHTML = scores.map(h => `
+        <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200">
+          <div class="text-xs text-slate-500">${h.district}</div>
+          <div class="font-bold text-slate-900 text-sm truncate">${h.kannada_name || h.name}</div>
+          <div class="text-2xl font-black font-mono my-1 ${h.composite_score >= 75 ? 'text-emerald-600' : 'text-amber-600'}">${h.composite_score}/100</div>
+          <div class="text-[11px] text-slate-500">${h.resolved_complaints} ಪರಿಹಾರ · ${h.overdue_complaints} ವಿಳಂಬ</div>
+        </div>
+      `).join('');
+    }
+    initDashboard();
+  </script>
+</body>
+</html>

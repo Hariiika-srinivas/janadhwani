@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ಸಾರ್ವಜನಿಕ ಪಾರದರ್ಶಕತೆ - ಜನಧ್ವನಿ (Public Transparency)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="bg-slate-900 text-white border-b border-slate-800 p-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="/" class="text-lg font-bold flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center font-bold">ಜ</span>
+        ಜನಧ್ವನಿ ಸಾರ್ವಜನಿಕ ಪಾರದರ್ಶಕತೆ ಪೋರ್ಟಲ್
+      </a>
+      <a href="/" class="text-xs text-slate-400 hover:text-white">ಮುಖ್ಯ ಪುಟ</a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+      <h2 class="text-2xl font-bold text-slate-900 mb-2">ನಾಗರಿಕ ಸಾರ್ವಜನಿಕ ಪಾರದರ್ಶಕತೆ ಮತ್ತು ಅನಾಮಧೇಯತೆ</h2>
+      <p class="text-sm text-slate-600 mb-6">
+        ಈ ಪುಟದಲ್ಲಿನ ಎಲ್ಲಾ ದತ್ತಾಂಶವು ಕಲ್ಯಾಣ ಕರ್ನಾಟಕದ ಸರ್ಕಾರಿ ಆಸ್ಪತ್ರೆಗಳ ಸಾರ್ವಜನಿಕ ಕುಂದುಕೊರತೆಗಳ ಒಟ್ಟು ಅಂಕಿಅಂಶಗಳಾಗಿವೆ. ಯಾವುದೇ ನಾಗರಿಕರ ಖಾಸಗಿ ವಿವರ ಅಥವಾ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಇಲ್ಲಿ ಬಹಿರಂಗಪಡಿಸಲಾಗುವುದಿಲ್ಲ.
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200 mb-6">
+        <div>
+          <span class="text-xs text-slate-500 block">ದಾಖಲಾದ ದೂರುಗಳು</span>
+          <span class="text-2xl font-black text-slate-900 font-mono" id="pub-total">--</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 block">ಪರಿಹರಿಸಲಾದ ದೂರುಗಳು</span>
+          <span class="text-2xl font-black text-emerald-600 font-mono" id="pub-resolved">--</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 block">ಪರಿಹಾರ ಪ್ರಮಾಣ</span>
+          <span class="text-2xl font-black text-teal-600 font-mono" id="pub-rate">--%</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 block">ನಾಗರಿಕ ರೇಟಿಂಗ್</span>
+          <span class="text-2xl font-black text-amber-500 font-mono" id="pub-rating">-- ★</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function loadStats() {
+      const res = await fetch('/api/public/stats');
+      const data = await res.json();
+      document.getElementById('pub-total').innerText = data.total_grievances_registered;
+      document.getElementById('pub-resolved').innerText = data.resolved_grievances;
+      document.getElementById('pub-rate').innerText = data.resolution_rate_pct + '%';
+      document.getElementById('pub-rating').innerText = data.citizen_satisfaction_stars + ' ★';
+    }
+    loadStats();
+  </script>
+</body>
+</html>

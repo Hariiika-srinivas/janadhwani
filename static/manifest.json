@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "JanaDhwani - Voice Public Grievance Platform",
+  "short_name": "JanaDhwani",
+  "description": "Accessible, multilingual, voice-based public grievance registration, tracking, and escalation platform for Kalyana Karnataka Solvathon 2026.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "/static/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

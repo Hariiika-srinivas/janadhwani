@@ -1,0 +1,8 @@
+{
+  "name": "JanaDhwani - Voice-Based Public Grievance Platform",
+  "description": "Accessible, multilingual, voice-based public grievance registration, tracking, and escalation platform for Kalyana Karnataka Solvathon 2026.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

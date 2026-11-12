@@ -1,0 +1,107 @@
+{
+  "name": "JanaDhwani - Resolution Verification & 48h Auto-Closure",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resolution-trigger",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-res",
+      "name": "Complaint Resolved Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = items[0].json.body || items[0].json;\nreturn [{\n  json: {\n    complaint_id: body.complaint_id,\n    public_id: body.public_id,\n    phone: body.phone,\n    resolved_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "prep-verification",
+      "name": "Prepare Citizen Verification Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "amount": 48,
+        "unit": "hours"
+      },
+      "id": "wait-48h",
+      "name": "Wait 48h for Citizen Response",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/complaints/{{ $json.public_id }}/status",
+        "method": "GET",
+        "options": {}
+      },
+      "id": "check-current-status",
+      "name": "Check Current Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.complaint.status }}",
+              "value2": "RESOLVED"
+            }
+          ]
+        }
+      },
+      "id": "if-still-pending",
+      "name": "Still Unconfirmed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/complaints/{{ $json.complaint.public_id }}/verify",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "action", "value": "confirm" },
+            { "name": "notes", "value": "Auto-closed after 48h with no citizen objection" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "auto-close",
+      "name": "Auto-Close With Audit Note",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 240]
+    }
+  ],
+  "connections": {
+    "Complaint Resolved Webhook": {
+      "main": [[{ "node": "Prepare Citizen Verification Message", "type": "main", "index": 0 }]]
+    },
+    "Prepare Citizen Verification Message": {
+      "main": [[{ "node": "Wait 48h for Citizen Response", "type": "main", "index": 0 }]]
+    },
+    "Wait 48h for Citizen Response": {
+      "main": [[{ "node": "Check Current Status", "type": "main", "index": 0 }]]
+    },
+    "Check Current Status": {
+      "main": [[{ "node": "Still Unconfirmed?", "type": "main", "index": 0 }]]
+    },
+    "Still Unconfirmed?": {
+      "main": [
+        [{ "node": "Auto-Close With Audit Note", "type": "main", "index": 0 }],
+        []
+      ]
+    }
+  }
+}

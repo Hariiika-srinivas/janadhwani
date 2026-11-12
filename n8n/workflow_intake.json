@@ -1,0 +1,107 @@
+{
+  "name": "JanaDhwani - Grievance Intake & Triage Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "grievance-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-intake",
+      "name": "Citizen Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Clean and normalize input text\nconst body = items[0].json.body || items[0].json;\nconst cleanText = (body.text || '').trim();\nconst phone = (body.phone || '9845000000').replace(/[^0-9]/g, '');\n\nreturn [{\n  json: {\n    text: cleanText,\n    organization_id: body.organization_id || 1,\n    ward_id: body.ward_id || null,\n    department_code: body.department_code || 'HEALTH',\n    language: body.language || 'kn',\n    channel: body.channel || 'VOICE',\n    phone: phone,\n    citizen_name: body.citizen_name || 'Anonymous Citizen'\n  }\n}];"
+      },
+      "id": "code-clean",
+      "name": "Normalize Text & Sanitize",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/api/complaints",
+        "method": "POST",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "text", "value": "={{ $json.text }}" },
+            { "name": "organization_id", "value": "={{ $json.organization_id }}" },
+            { "name": "ward_id", "value": "={{ $json.ward_id }}" },
+            { "name": "department_code", "value": "={{ $json.department_code }}" },
+            { "name": "language", "value": "={{ $json.language }}" },
+            { "name": "channel", "value": "={{ $json.channel }}" },
+            { "name": "phone", "value": "={{ $json.phone }}" },
+            { "name": "citizen_name", "value": "={{ $json.citizen_name }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-post-complaint",
+      "name": "JanaDhwani Core API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.is_emergency }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-emergency",
+      "name": "Emergency Check?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{\n  json: {\n    type: 'EMERGENCY_DISPATCH',\n    alert: 'CRITICAL MEDICAL EMERGENCY DETECTED',\n    helpline: $json.helpline,\n    action: 'Route immediately to Casualty Desk or Call 108'\n  }\n}];"
+      },
+      "id": "emergency-alert",
+      "name": "108 Urgent Routing",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{\n  json: {\n    type: 'STANDARD_GRIEVANCE_CONFIRMATION',\n    public_id: $json.public_id,\n    category: $json.category_name,\n    authority: $json.responsible_authority,\n    deadline: $json.deadline,\n    ack: $json.kannada_ack\n  }\n}];"
+      },
+      "id": "standard-ack",
+      "name": "Citizen Acknowledgement SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1120, 400]
+    }
+  ],
+  "connections": {
+    "Citizen Intake Webhook": {
+      "main": [[{ "node": "Normalize Text & Sanitize", "type": "main", "index": 0 }]]
+    },
+    "Normalize Text & Sanitize": {
+      "main": [[{ "node": "JanaDhwani Core API", "type": "main", "index": 0 }]]
+    },
+    "JanaDhwani Core API": {
+      "main": [[{ "node": "Emergency Check?", "type": "main", "index": 0 }]]
+    },
+    "Emergency Check?": {
+      "main": [
+        [{ "node": "108 Urgent Routing", "type": "main", "index": 0 }],
+        [{ "node": "Citizen Acknowledgement SMS", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}
